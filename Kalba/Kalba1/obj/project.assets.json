@@ -694,11 +694,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Paulius\\Desktop\\kalba\\projektas\\Kalba\\Kalba1\\Kalba1.csproj",
+      "projectUniqueName": "C:\\Users\\Paulius\\Documents\\GitHub\\Kalba\\Kalba\\Kalba1\\Kalba1.csproj",
       "projectName": "Kalba1",
-      "projectPath": "C:\\Users\\Paulius\\Desktop\\kalba\\projektas\\Kalba\\Kalba1\\Kalba1.csproj",
+      "projectPath": "C:\\Users\\Paulius\\Documents\\GitHub\\Kalba\\Kalba\\Kalba1\\Kalba1.csproj",
       "packagesPath": "C:\\Users\\Paulius\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Paulius\\Desktop\\kalba\\projektas\\Kalba\\Kalba1\\obj\\",
+      "outputPath": "C:\\Users\\Paulius\\Documents\\GitHub\\Kalba\\Kalba\\Kalba1\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
