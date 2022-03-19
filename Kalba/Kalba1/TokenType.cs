@@ -49,6 +49,6 @@ namespace Kalba1
 
         Not = 30,
         Negative = 31,
-        method = 32
+        Method = 32
     }
 }

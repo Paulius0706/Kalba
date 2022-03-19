@@ -8,7 +8,8 @@ namespace Kalba1
     {
         static void Main(string[] args)
         {
-            string scriptText = File.ReadAllText(@"C:\Users\Paulius\Desktop\kalba\projektas\Kalba\Kalba\Script.txt");
+            //string scriptText = File.ReadAllText(@"C:\Users\Paulius\Desktop\kalba\projektas\Kalba\Kalba\Script.txt");
+            string[] scriptText = File.ReadAllLines(@"C:\Users\Paulius\Desktop\kalba\projektas\Kalba\Kalba\Script.txt");
             List<Token> tokens = Token.TXTtoTokens(scriptText);
 
             int i = 0;
