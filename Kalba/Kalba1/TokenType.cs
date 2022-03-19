@@ -24,7 +24,7 @@ namespace Kalba1
         Ass = 13,
 
         BracketL = 14,
-        BraketR = 15,
+        BracketR = 15,
 
         CurlyL = 16,
         CurlyR = 17,
@@ -35,7 +35,7 @@ namespace Kalba1
         Number = 18,
 
         Value = 21,
-        Unknow = 22,
+        Unknown = 22,
 
         Comma = 23,
         Dot = 24,

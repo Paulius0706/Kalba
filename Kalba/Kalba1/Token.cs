@@ -13,9 +13,11 @@ namespace Kalba1
         public int row { get; set; }
         public int column { get; set; }
         public TokenType type;
+        public TokenType assignType;
         public object value { get; set; }
 
         public List<Token> connections;
+        
 
         public Token(int row, int column, TokenType type, object value)
         {
@@ -27,9 +29,16 @@ namespace Kalba1
         }
         public Token() { }
 
+
         public override string ToString()
         {
-            return "[" + type + ":" + value + "]";
+            string output = "[" + type + ":" + value + " :";
+            foreach (Token token in connections)
+            {
+                output += token;
+            }
+            output += "]";
+            return output;
         }
 
         public static List<Token> TXTtoTokens(string[] lines)
@@ -64,7 +73,7 @@ namespace Kalba1
                         else if (newToken == "int") { tokens.Add(new Token(y, ox, TokenType.Int, null)); }
                         else if (newToken == "double") { tokens.Add(new Token(y, ox, TokenType.Double, null)); }
                         else if (newToken == "string") { tokens.Add(new Token(y, ox, TokenType.String, null)); }
-                        else { tokens.Add(new Token(i, y, TokenType.Unknow, newToken)); }
+                        else { tokens.Add(new Token(y, ox, TokenType.Unknown, newToken)); }
                     }
                     else if (line[i] == '+') { tokens.Add(new Token(y, i, TokenType.Add, null)); i++; }
                     else if (line[i] == '-') { tokens.Add(new Token(y, i, TokenType.Sub, null)); i++; }
@@ -78,7 +87,7 @@ namespace Kalba1
                     else if (line[i] == ',') { tokens.Add(new Token(y, i, TokenType.Comma, null)); i++;}
                     else if (line[i] == ';') { tokens.Add(new Token(y, i, TokenType.SemiComma, null)); i++;}
                     else if (line[i] == '(') { tokens.Add(new Token(y, i, TokenType.BracketL, null)); i++;}
-                    else if (line[i] == ')') { tokens.Add(new Token(y, i, TokenType.BraketR, null)); i++;}
+                    else if (line[i] == ')') { tokens.Add(new Token(y, i, TokenType.BracketR, null)); i++;}
                     else if (line[i] == '[') { tokens.Add(new Token(y, i, TokenType.BoxL, null)); i++;}
                     else if (line[i] == ']') { tokens.Add(new Token(y, i, TokenType.BoxR, null)); i++;}
                     else if (line[i] == '{') { tokens.Add(new Token(y, i, TokenType.CurlyL, null)); i++;}
@@ -102,13 +111,46 @@ namespace Kalba1
 
                 }
             }
-
             return tokens;
         }
 
+        /// <summary>
+        /// Method that compresses tokens
+        /// </summary>
+        /// <param name="tokens">Given list of tokens</param>
+        /// <returns>Compressed token list, f.e [8][add][7] -> [add:8,7]</returns>
         public static List<Token> Compress(List<Token> tokens) {
-            
 
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                if (tokens[i].type == TokenType.Unknown)
+                {
+                    if (tokens[i + 1].type == TokenType.BracketL)
+                    {
+                        tokens[i].type = TokenType.Method;
+                        tokens.RemoveAt(i + 1);
+                        int tIndex = i + 1;
+                        while (tokens[tIndex].type != TokenType.BracketR)
+                        {
+                            tokens[i].connections.Add(tokens[tIndex]);
+                            tokens.RemoveAt(tIndex);
+                        }
+                        tokens.RemoveAt(tIndex);
+                        //tokens[i].connections = Token.Compress(tokens[i].connections);
+                    }
+                    else
+                    {
+                        tokens[i].type = TokenType.Value;
+                    }
+                }
+                /*else if (tokens[i].type == TokenType.Add || tokens[i].type == TokenType.Mul || tokens[i].type == TokenType.Sub)
+                {
+                    int tmpIndex = i - 1;
+                    Token tmp = tokens[tmpIndex];
+                    tokens[tmpIndex] = tokens[i];
+                    tokens[i] = tmp;
+                }*/
+            }
             return tokens;
         }
     }
