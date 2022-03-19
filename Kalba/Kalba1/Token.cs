@@ -46,20 +46,20 @@ namespace Kalba1
                     {
                         int ox = i;
                         i++;
-                        while (i < lines.Length && line[i] != '"'){newToken += lines[i++];}
+                        while (i < line.Length && line[i] != '"'){newToken += line[i++];}
                         i++;
                         tokens.Add(new Token(y, ox, TokenType.String, newToken));
                     }
                     else if (Char.IsDigit(line[i]))
                     {
                         int ox = i;
-                        while (i < lines.Length && (Char.IsDigit(line[i]) || line[i] == '.')){ newToken += lines[i++]; }
+                        while (i < line.Length && (Char.IsDigit(line[i]) || line[i] == '.')){ newToken += line[i++]; }
                         tokens.Add(new Token(y, ox, TokenType.Number, newToken));
                     }
                     else if (Char.IsLetter(line[i]))
                     {
                         int ox = i;
-                        while (i < lines.Length && Char.IsLetterOrDigit(line[i])){ newToken += lines[i++]; }
+                        while (i < line.Length && Char.IsLetterOrDigit(line[i])){ newToken += line[i++]; }
                         if (newToken == "bool") { tokens.Add(new Token(y, ox, TokenType.Bool, null)); }
                         else if (newToken == "int") { tokens.Add(new Token(y, ox, TokenType.Int, null)); }
                         else if (newToken == "double") { tokens.Add(new Token(y, ox, TokenType.Double, null)); }

@@ -8,3 +8,14 @@ C:\Users\Paulius\Desktop\kalba\projektas\Kalba\Kalba1\obj\Release\netcoreapp2.1\
 C:\Users\Paulius\Desktop\kalba\projektas\Kalba\Kalba1\obj\Release\netcoreapp2.1\Kalba1.AssemblyInfo.cs
 C:\Users\Paulius\Desktop\kalba\projektas\Kalba\Kalba1\obj\Release\netcoreapp2.1\Kalba1.dll
 C:\Users\Paulius\Desktop\kalba\projektas\Kalba\Kalba1\obj\Release\netcoreapp2.1\Kalba1.pdb
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\bin\Release\netcoreapp2.1\Kalba1.deps.json
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\bin\Release\netcoreapp2.1\Kalba1.runtimeconfig.json
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\bin\Release\netcoreapp2.1\Kalba1.runtimeconfig.dev.json
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\bin\Release\netcoreapp2.1\Kalba1.dll
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\bin\Release\netcoreapp2.1\Kalba1.pdb
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\obj\Release\netcoreapp2.1\Kalba1.csprojAssemblyReference.cache
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\obj\Release\netcoreapp2.1\Kalba1.csproj.CoreCompileInputs.cache
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\obj\Release\netcoreapp2.1\Kalba1.AssemblyInfoInputs.cache
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\obj\Release\netcoreapp2.1\Kalba1.AssemblyInfo.cs
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\obj\Release\netcoreapp2.1\Kalba1.dll
+C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\obj\Release\netcoreapp2.1\Kalba1.pdb
