@@ -24,7 +24,7 @@ namespace Kalba1
         Ass = 13,
 
         BracketL = 14,
-        BraketR = 15,
+        BracketR = 15,
 
         CurlyL = 16,
         CurlyR = 17,
@@ -49,6 +49,16 @@ namespace Kalba1
 
         Not = 30,
         Negative = 31,
-        Method = 32
+        Method = 32,
+        AddMethod = 33,
+
+        If = 34,
+        For = 35,
+        While = 36,
+        Else = 37,
+        Abs = 38,
+        Sqrt = 39,
+        Print = 40,
+        PrintLine = 41
     }
 }

@@ -10,6 +10,7 @@ namespace Kalba1
             string[] scriptText = File.ReadAllLines(@"C:\Users\Paulius\Documents\GitHub\Kalba\Kalba\Kalba1\script.txt");
             List<Token> tokens = Token.TXTtoTokens(scriptText);
 
+            tokens = Token.Compress(tokens);
             int i = 0;
             int y = 0;
             while (i < tokens.Count)
@@ -21,7 +22,7 @@ namespace Kalba1
 
                 }
                 Console.Write(tokens[i]);
-                
+
                 i++;
             }
         }
