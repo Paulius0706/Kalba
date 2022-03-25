@@ -49,6 +49,21 @@ namespace Kalba1
 
         Not = 30,
         Negative = 31,
+<<<<<<< Updated upstream
         Method = 32
+=======
+        Method = 32,
+        AddMethod = 33,
+
+        If = 34,
+        For = 35,
+        While = 36,
+        Else = 37,
+        Elsif = 38,
+        Abs = 39,
+        Sqrt = 40,
+        Print = 41,
+        PrintLine = 42
+>>>>>>> Stashed changes
     }
 }
