@@ -35,7 +35,7 @@ namespace Kalba1
         Number = 18,
 
         Value = 21,
-        Unknow = 22,
+        Unknown = 22,
 
         Comma = 23,
         Dot = 24,
@@ -56,9 +56,17 @@ namespace Kalba1
         For = 35,
         While = 36,
         Else = 37,
-        Abs = 38,
-        Sqrt = 39,
-        Print = 40,
-        PrintLine = 41
+        Elsif = 38,
+        Abs = 39,
+        Sqrt = 40,
+        Print = 41,
+        PrintLine = 42,
+        IntDeclare = 43,
+        DoubleDeclare = 44,
+        StringDeclare = 45,
+        BoolDeclare = 46,
+        And = 47,
+        Or = 48
+
     }
 }
