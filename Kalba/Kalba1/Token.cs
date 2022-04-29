@@ -67,7 +67,15 @@ namespace Kalba1
                 || this.type == TokenType.Add
                 || this.type == TokenType.Sub
                 || this.type == TokenType.Mul
-                || this.type == TokenType.Div)
+                || this.type == TokenType.Div
+                || this.type == TokenType.Less
+                || this.type == TokenType.More
+                || this.type == TokenType.LessOrEqual
+                || this.type == TokenType.MoreOrEqual
+                || this.type == TokenType.Equal
+                || this.type == TokenType.NotEqual
+                || this.type == TokenType.And
+                || this.type == TokenType.Or)
             {
                 output += "\n" + tab + "    connections:\n";
                 foreach (Token token in connections) output += token.ToString(pad + 2) + "\n";
@@ -154,7 +162,19 @@ namespace Kalba1
                     else if (line[i] == ']') { tokens.Add(new Token(y, i, TokenType.BoxR, null)); i++; }
                     else if (line[i] == '{') { tokens.Add(new Token(y, i, TokenType.CurlyL, null)); i++; }
                     else if (line[i] == '}') { tokens.Add(new Token(y, i, TokenType.CurlyR, null)); i++; }
-                    else if (line[i] == '=') { tokens.Add(new Token(y, i, TokenType.Ass, null)); i++; }
+                    else if (line[i] == '&')
+                    {
+                        if (line[i + 1] == '&') { tokens.Add(new Token(y, i, TokenType.And, null)); i += 2; }
+                    }
+                    else if (line[i] == '|')
+                    {
+                        if (line[i + 1] == '|') { tokens.Add(new Token(y, i, TokenType.Or, null)); i += 2; }
+                    }
+                    else if (line[i] == '=')
+                    {
+                        if (line[i + 1] == '=') { tokens.Add(new Token(y, i, TokenType.Equal, null)); i += 2; }
+                        else { tokens.Add(new Token(y, i, TokenType.Ass, null)); i++; }
+                    }
                     else if (line[i] == '!')
                     {
                         if (line[i + 1] == '=') { tokens.Add(new Token(y, i, TokenType.NotEqual, null)); i += 2; }

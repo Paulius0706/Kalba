@@ -44,7 +44,7 @@ namespace Kalba1
                 {
                     FunctionConstructor(i, tokens);
                 }
-                if(tokens[i].type == TokenType.Unknown)
+                if(tokens[i].type == TokenType.Method)
                 {
                     tokens = FunctionConstructor(i, tokens);
                 }
@@ -90,7 +90,8 @@ namespace Kalba1
                     tokens.RemoveAt(nextindex);
                 }
             }
-            tokens[i].inputConnections = Compress1(inputConnections);
+
+            tokens[i].inputConnections = AritmeticConstructor(inputConnections);
 
             // (connections)
             lbracketsCount = 1;
@@ -147,6 +148,7 @@ namespace Kalba1
             temp = Compress1(temp);
             temp.Add(inputConnections1[0]);
             inputConnections1.RemoveAt(0);
+            //temp = AssignConstructor(temp);
             foreach (Token t in temp) inputConnections.Add(t);
             // ; bool ;
             temp = new List<Token>();
@@ -155,7 +157,7 @@ namespace Kalba1
                 temp.Add(inputConnections1[0]);
                 inputConnections1.RemoveAt(0);
             }
-            temp = Compress1(temp);
+            temp = AritmeticConstructor(temp);
             temp.Add(inputConnections1[0]);
             inputConnections1.RemoveAt(0);
             foreach (Token t in temp) inputConnections.Add(t);
@@ -166,7 +168,7 @@ namespace Kalba1
                 temp.Add(inputConnections1[0]);
                 inputConnections1.RemoveAt(0);
             }
-            temp = AssignConstructor(0,temp, temp[0].row);
+            temp = Compress1(temp);
             foreach (Token t in temp) inputConnections.Add(t);
             // input ddd ; bool ; end  ====> FIN
             tokens[i].inputConnections = inputConnections;
@@ -266,11 +268,33 @@ namespace Kalba1
             else tokens.Insert(nextindex, assign);
             return tokens;
         }
+        private List<Token> AssignConstructor(List<Token> tokens)
+        {
+
+            Token assign;
+            List<Token> outputs = new List<Token>();
+            List<Token> inputs = new List<Token>();
+            int nextindex = 0;
+            while (nextindex < tokens.Count && tokens[nextindex].type != TokenType.Ass)
+            {
+                outputs.Add(tokens[nextindex]);
+                tokens.RemoveAt(nextindex);
+            }
+            assign = tokens[nextindex];
+            tokens.RemoveAt(nextindex);
+            while (nextindex < tokens.Count)
+            {
+                inputs.Add(tokens[nextindex]);
+                tokens.RemoveAt(nextindex);
+            }
+            assign.inputConnections = AritmeticConstructor(inputs);
+            assign.outputConnections = ListCompress(outputs);
+            tokens.Add(assign);
+            return tokens;
+        }
         private List<Token> AritmeticConstructor(List<Token> tokens)
         {
-            // logic stuff if < <= >= > == != && ||
-            // do stuff
-
+            
             // methods simplification
             for(int i = 0; i < tokens.Count; i++)
             {
@@ -290,6 +314,22 @@ namespace Kalba1
                     tokens = AritmeticBracketConstructor(i, tokens);
                 }
             }
+
+            // logic stuff if < <= >= > == != && ||
+            bool haveAndOr = false;
+            for (int i = 0; i < tokens.Count; i++)
+                if (tokens[i].type == TokenType.And 
+                    || tokens[i].type == TokenType.Or) haveAndOr = true;
+            if (haveAndOr) return LogicAndOrAritmetics(tokens);
+            bool haveLessMoreEqual = false;
+            for (int i = 0; i < tokens.Count; i++)
+                if (tokens[i].type == TokenType.Less 
+                    || tokens[i].type == TokenType.More
+                    || tokens[i].type == TokenType.MoreOrEqual
+                    || tokens[i].type == TokenType.LessOrEqual
+                    || tokens[i].type == TokenType.Equal
+                    || tokens[i].type == TokenType.NotEqual) haveLessMoreEqual = true;
+            if (haveLessMoreEqual) return LogicAritmetics(tokens);
 
             // negative number
             for (int i = 0; i < tokens.Count; i++)
@@ -358,15 +398,206 @@ namespace Kalba1
             tokens[i] = AritmeticConstructor(tokens1)[0];
             return tokens;
         }
-        private List<Token> LogicAndOrAritmetics (int i, List<Token> tokens)
+        private List<Token> LogicAndOrAritmetics (List<Token> tokens)
         {
+            List<Token> logic = new List<Token>();
+            while (tokens.Count > 0)
+            {
+                List<Token> expr = new List<Token>();
+                while(tokens.Count > 0 && (tokens[0].type != TokenType.And && tokens[0].type != TokenType.Or))
+                {
+                    expr.Add(tokens[0]);
+                    tokens.RemoveAt(0);
+                }
+                expr = AritmeticConstructor(expr);
+                foreach (Token t in expr) logic.Add(t);
+                if(tokens.Count > 0 && (tokens[0].type == TokenType.And || tokens[0].type == TokenType.Or))
+                {
+                    logic.Add(tokens[0]);
+                    tokens.RemoveAt(0);
+                }
+            }
+            while(logic.Count > 1)
+            {
+                if (logic.Count > 2)
+                {
+                    if((logic[1].type == TokenType.And || logic[1].type == TokenType.Or) && logic[1].connections.Count == 0)
+                    {
+                        Token temp = logic[1];
+                        temp.connections.Add(logic[0]);
+                        temp.connections.Add(logic[2]);
+                        logic.RemoveAt(1);
+                        logic.RemoveAt(1);
+                        logic[0] = temp;
+                    }
+                }
+                else break;
+            }
+            return logic;
+        }
+        private List<Token> LogicAritmetics(List<Token> tokens)
+        {
+            List<Token> right = new List<Token>();
+            List<Token> left = new List<Token>();
+            Token comparison;
+            while (tokens.Count > 0 && (
+                tokens[0].type != TokenType.More 
+                && tokens[0].type != TokenType.Less
+                && tokens[0].type != TokenType.MoreOrEqual
+                && tokens[0].type != TokenType.LessOrEqual
+                && tokens[0].type != TokenType.NotEqual
+                && tokens[0].type != TokenType.Equal))
+            {
+                right.Add(tokens[0]);
+                tokens.RemoveAt(0);
+            }
+            right = AritmeticConstructor(right);
 
+            while (tokens.Count > 1 && (
+                tokens[1].type != TokenType.More
+                && tokens[1].type != TokenType.Less
+                && tokens[1].type != TokenType.MoreOrEqual
+                && tokens[1].type != TokenType.LessOrEqual
+                && tokens[1].type != TokenType.NotEqual
+                && tokens[1].type != TokenType.Equal))
+            {
+                left.Add(tokens[1]);
+                tokens.RemoveAt(1);
+            }
+            left = AritmeticConstructor(left);
+            tokens[0].connections.Add(right[0]);
+            tokens[0].connections.Add(left[0]);
             return tokens;
         }
-        private List<Token> LogicAritmetics(int i, List<Token> tokens)
+        private List<Token> AddMethodConstructor(int i, List<Token> tokens)
         {
+            List<Token> inputConnections = new List<Token>();
+            List<Token> connections = new List<Token>();
+            List<Token> outputConnections = new List<Token>();
+            int lBoxCount = 0;
+            int rBoxCount = 0;
+            int nextIndex = i + 1;
+
+            // (output connections)
+            if (tokens[nextIndex].type == TokenType.BoxL)
+            {
+                lBoxCount++;
+                tokens.RemoveAt(nextIndex);
+                while (lBoxCount != rBoxCount)
+                {
+                    if (tokens[nextIndex].type == TokenType.DoubleDeclare)
+                    {
+                        tokens.RemoveAt(nextIndex);
+                        tokens[nextIndex].assignType = TokenType.Double;
+                    }
+
+                    if (tokens[nextIndex].type == TokenType.IntDeclare)
+                    {
+                        tokens.RemoveAt(nextIndex);
+                        tokens[nextIndex].assignType = TokenType.Int;
+                    }
+
+                    if (tokens[nextIndex].type == TokenType.StringDeclare)
+                    {
+                        tokens.RemoveAt(nextIndex);
+                        tokens[nextIndex].assignType = TokenType.String;
+                    }
+
+                    if (tokens[nextIndex].type == TokenType.BoxL)
+                    {
+                        lBoxCount++;
+                    }
+                    if (tokens[nextIndex].type == TokenType.BoxR)
+                    {
+                        rBoxCount++;
+                    }
+
+                    if (lBoxCount != rBoxCount)
+                    {
+                        if (tokens[nextIndex].type != TokenType.Comma)
+                        {
+                            outputConnections.Add(tokens[nextIndex]);
+                        }
+                    }
+
+                    tokens.RemoveAt(nextIndex);
+                }
+            }
+
+            tokens[i].outputConnections = Compress1(outputConnections);
+
+
+            // (input connections)
+            lBoxCount = 0;
+            rBoxCount = 0;
+
+            // Check if method name is declared
+            if (tokens[nextIndex].type == TokenType.Method)
+            {
+                tokens[i].value = tokens[nextIndex].value;
+                tokens.RemoveAt(nextIndex);
+            }
+
+            // Compress brackets
+            if (tokens[nextIndex].type == TokenType.BracketL)
+            {
+                lBoxCount++;
+                tokens.RemoveAt(nextIndex);
+                while (lBoxCount != rBoxCount)
+                {
+                    if (tokens[nextIndex].type == TokenType.DoubleDeclare)
+                    {
+                        tokens.RemoveAt(nextIndex);
+                        tokens[nextIndex].assignType = TokenType.Double;
+                    }
+
+                    if (tokens[nextIndex].type == TokenType.IntDeclare)
+                    {
+                        tokens.RemoveAt(nextIndex);
+                        tokens[nextIndex].assignType = TokenType.Int;
+                    }
+
+                    if (tokens[nextIndex].type == TokenType.StringDeclare)
+                    {
+                        tokens.RemoveAt(nextIndex);
+                        tokens[nextIndex].assignType = TokenType.String;
+                    }
+                    if (tokens[nextIndex].type == TokenType.BracketL)
+                        lBoxCount++;
+                    if (tokens[nextIndex].type == TokenType.BracketR)
+                        rBoxCount++;
+                    if (lBoxCount != rBoxCount)
+                        inputConnections.Add(tokens[nextIndex]);
+                    tokens.RemoveAt(nextIndex);
+                }
+            }
+
+
+            // Compress connections recursively
+            tokens[i].inputConnections = Compress1(inputConnections);
+
+            lBoxCount = 1;
+            rBoxCount = 0;
+
+            // connections
+            while (lBoxCount != rBoxCount)
+            {
+                if (tokens[nextIndex].type == TokenType.If
+                    || tokens[nextIndex].type == TokenType.Elsif
+                    || tokens[nextIndex].type == TokenType.While
+                    || tokens[nextIndex].type == TokenType.Else)
+                    lBoxCount++;
+                if (tokens[nextIndex].type == TokenType.For) lBoxCount += 3;
+                if (tokens[nextIndex].type == TokenType.SemiComma) rBoxCount++;
+                if (rBoxCount != lBoxCount) connections.Add(tokens[nextIndex]);
+                tokens.RemoveAt(nextIndex);
+            }
+
+            tokens[i].connections = Compress1(connections);
+
 
             return tokens;
         }
     }
 }
+

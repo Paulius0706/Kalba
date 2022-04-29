@@ -29,10 +29,10 @@ namespace Kalba1
         CurlyL = 16,
         CurlyR = 17,
 
-        BoxL = 16,
-        BoxR = 17,
+        BoxL = 18,
+        BoxR = 19,
 
-        Number = 18,
+        Number = 20,
 
         Value = 21,
         Unknown = 22,
