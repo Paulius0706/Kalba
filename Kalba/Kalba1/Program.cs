@@ -9,8 +9,9 @@ namespace Kalba1
         {
             string[] scriptText = File.ReadAllLines("../../../script.txt");
             List<Token> tokens = Token.TXTtoTokens(scriptText);
-
-            tokens = Token.Compress(tokens);
+            Sintax sintax = new Sintax();
+            tokens = sintax.Compress(tokens);
+            //tokens = Token.Compress(tokens);
             int i = 0;
             int y = 0;
             while (i < tokens.Count)

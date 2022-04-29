@@ -111,7 +111,7 @@ namespace Kalba1
                     for (int i = 0; i < c; i++) {
                         string variableName = Convert.ToString(token.outputConnections[i].value);
                         if (isMethod) methodValues[variableName].value = token.inputConnections[i].value;
-                        else values[variableName].value = token.inputConnections[i].value;
+                        else          values[      variableName].value = token.inputConnections[i].value;
                     }
                 }
                 return tokenList;
@@ -139,7 +139,7 @@ namespace Kalba1
                             methods[a1].row, 
                             methods[a1].column,
                             methods[a1].inputConnections[i].assignType,
-                            token.connections[i].value
+                            executeCommand(token.connections[i])[0].value
                             ));
                 }
                 // input to method output variables
@@ -196,7 +196,7 @@ namespace Kalba1
             }
             if (token.type == TokenType.While) {
                 List<Token> conn = token.connections;
-                List<Token> inputs1 = Token.Compress(token.inputConnections);
+                List<Token> inputs1 = token.inputConnections;
                 Intepretator intepretator = new Intepretator(conn, false);
 
                 while (Convert.ToBoolean(executeCommand(inputs1[0])[0]))
