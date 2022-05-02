@@ -2,3 +2,6 @@
 
 PrintLine((2+2)*2)
 PrintLine(2+2*2)
+PrintLine(5<3)
+double a = 2
+PrintLine(a)

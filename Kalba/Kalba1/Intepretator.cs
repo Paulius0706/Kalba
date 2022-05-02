@@ -8,12 +8,13 @@ namespace Kalba1
     {
 
         public List<Token> tokens;
-        public static Dictionary<string, Token> values;
-        public static Dictionary<string, Token> methods;
+        public static Dictionary<string, Token> values = new Dictionary<string, Token>();
+        public static Dictionary<string, Token> methods = new Dictionary<string, Token>();
         public Dictionary<string, Token> methodValues;
         public bool isMethod { get; set; }
 
         public Intepretator(List<Token> tokens, bool isMethod) {
+            if (isMethod) methodValues = new Dictionary<string, Token>();
             this.tokens = tokens;
             this.isMethod = isMethod;
         }
@@ -105,14 +106,13 @@ namespace Kalba1
             if (token.type == TokenType.Ass)
             {
                 List<Token> b = executeCommand(token.inputConnections[0]);
-                if (token.connections[0].type == TokenType.Value)
+                // pataisyti
+                int c = token.outputConnections.Count > token.inputConnections.Count ? token.inputConnections.Count : token.outputConnections.Count;
+                for (int i = 0; i < c; i++)
                 {
-                    int c = token.outputConnections.Count > token.inputConnections.Count ? token.inputConnections.Count : token.outputConnections.Count;
-                    for (int i = 0; i < c; i++) {
-                        string variableName = Convert.ToString(token.outputConnections[i].value);
-                        if (isMethod) methodValues[variableName].value = token.inputConnections[i].value;
-                        else          values[      variableName].value = token.inputConnections[i].value;
-                    }
+                    string variableName = Convert.ToString(token.outputConnections[i].value);
+                    if (isMethod) methodValues[variableName].value = b[i].value;
+                    else values[variableName].value = b[i].value;
                 }
                 return tokenList;
             }
@@ -257,7 +257,7 @@ namespace Kalba1
                 Token lt = executeCommand(token.connections[0])[0];
                 Token rt = executeCommand(token.connections[1])[0];
                 
-                if((lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
+                if((lt.type == TokenType.Number || lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Number || rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
                 {
                     tokenList.Add(new Token(token.row, token.column, TokenType.Bool, Convert.ToDouble(lt.value) == Convert.ToDouble(rt.value)));
                 }
@@ -271,7 +271,7 @@ namespace Kalba1
                 Token lt = executeCommand(token.connections[0])[0];
                 Token rt = executeCommand(token.connections[1])[0];
 
-                if ((lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
+                if ((lt.type == TokenType.Number || lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Number || rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
                 {
                     tokenList.Add(new Token(token.row, token.column, TokenType.Bool, Convert.ToDouble(lt.value) != Convert.ToDouble(rt.value)));
                 }
@@ -286,7 +286,7 @@ namespace Kalba1
                 Token lt = executeCommand(token.connections[0])[0];
                 Token rt = executeCommand(token.connections[1])[0];
 
-                if ((lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
+                if ((lt.type == TokenType.Number || lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Number || rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
                 {
                     tokenList.Add(new Token(token.row, token.column, TokenType.Bool, Convert.ToDouble(lt.value) > Convert.ToDouble(rt.value)));
                 }
@@ -297,7 +297,7 @@ namespace Kalba1
                 Token lt = executeCommand(token.connections[0])[0];
                 Token rt = executeCommand(token.connections[1])[0];
 
-                if ((lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
+                if ((lt.type == TokenType.Number || lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Number || rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
                 {
                     tokenList.Add(new Token(token.row, token.column, TokenType.Bool, Convert.ToDouble(lt.value) < Convert.ToDouble(rt.value)));
                 }
@@ -308,7 +308,7 @@ namespace Kalba1
                 Token lt = executeCommand(token.connections[0])[0];
                 Token rt = executeCommand(token.connections[1])[0];
 
-                if ((lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
+                if ((lt.type == TokenType.Number || lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Number || rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
                 {
                     tokenList.Add(new Token(token.row, token.column, TokenType.Bool, Convert.ToDouble(lt.value) <= Convert.ToDouble(rt.value)));
                 }
@@ -319,7 +319,7 @@ namespace Kalba1
                 Token lt = executeCommand(token.connections[0])[0];
                 Token rt = executeCommand(token.connections[1])[0];
 
-                if ((lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
+                if ((lt.type == TokenType.Number || lt.type == TokenType.Int || lt.type == TokenType.Double || lt.type == TokenType.Bool) && (rt.type == TokenType.Number || rt.type == TokenType.Int || rt.type == TokenType.Double || rt.type == TokenType.Bool))
                 {
                     tokenList.Add(new Token(token.row, token.column, TokenType.Bool, Convert.ToDouble(lt.value) >= Convert.ToDouble(rt.value)));
                 }
@@ -329,6 +329,30 @@ namespace Kalba1
             {
                 string name = Convert.ToString(token.value);
                 methods.Add(name, token);
+            }
+            if (token.type == TokenType.BoolDeclare)
+            {
+                if (isMethod) methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Bool, false));
+                else values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Bool, false));
+                return tokenList;
+            }
+            if (token.type == TokenType.DoubleDeclare)
+            {
+                if (isMethod) methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Double, 0));
+                else values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Double, 0));
+                return tokenList;
+            }
+            if (token.type == TokenType.IntDeclare)
+            {
+                if (isMethod) methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Int, 0));
+                else values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Int, 0));
+                return tokenList;
+            }
+            if (token.type == TokenType.StringDeclare)
+            {
+                if (isMethod) methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.String, ""));
+                else values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.String, ""));
+                return tokenList;
             }
             return tokenList;
         }
