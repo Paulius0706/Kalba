@@ -26,7 +26,7 @@ namespace Kalba1
 
         public List<Token> executeCommand(Token token) {
             List<Token> tokenList = new List<Token>();
-            if (token.type == TokenType.Double || token.type == TokenType.Int || token.type == TokenType.Bool || token.type == TokenType.String) {
+            if (token.type == TokenType.Double || token.type == TokenType.Int || token.type == TokenType.Bool || token.type == TokenType.String || token.type == TokenType.Number) {
                 tokenList.Add(token);
                 return tokenList;
             }
@@ -35,15 +35,15 @@ namespace Kalba1
                 Token b = executeCommand(token.connections[1])[0];
                 if (a.type == TokenType.String || b.type == TokenType.String)
                 {
-                    string a1 = Convert.ToString(a);
-                    string b1 = Convert.ToString(b);
+                    string a1 = Convert.ToString(a.value);
+                    string b1 = Convert.ToString(b.value);
                     tokenList.Add(new Token(token.row, token.column, TokenType.String, a1 + b1));
                     return tokenList;
                 }
-                if ((a.type == TokenType.Double && a.type == TokenType.Int) || (b.type == TokenType.Double && b.type == TokenType.Int))
+                if ((a.type == TokenType.Number ||a.type == TokenType.Double || a.type == TokenType.Int) && (b.type == TokenType.Number || b.type == TokenType.Double || b.type == TokenType.Int))
                 {
-                    double a1 = Convert.ToDouble(a);
-                    double b1 = Convert.ToDouble(b);
+                    double a1 = Convert.ToDouble(a.value);
+                    double b1 = Convert.ToDouble(b.value);
                     double c = a1 + b1;
 
                     if (c % 1 == 0) tokenList.Add(new Token(token.row, token.column, TokenType.Int, c));
@@ -77,11 +77,11 @@ namespace Kalba1
             {
                 Token a = executeCommand(token.connections[0])[0];
                 Token b = executeCommand(token.connections[1])[0];
-                if ((a.type == TokenType.Double && a.type == TokenType.Int) || (b.type == TokenType.Double && b.type == TokenType.Int))
+                if ((a.type == TokenType.Number || a.type == TokenType.Double || a.type == TokenType.Int) && (b.type == TokenType.Number || b.type == TokenType.Double || b.type == TokenType.Int))
                 {
-                    double a1 = Convert.ToDouble(a);
-                    double b1 = Convert.ToDouble(b);
-                    double c = a1 / b1;
+                    double a1 = Convert.ToDouble(a.value);
+                    double b1 = Convert.ToDouble(b.value);
+                    double c = a1 * b1;
                     if (c % 1 == 0) tokenList.Add(new Token(token.row, token.column, TokenType.Int, c));
                     else tokenList.Add(new Token(token.row, token.column, TokenType.Double, c));
                     return tokenList;

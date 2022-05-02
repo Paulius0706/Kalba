@@ -42,7 +42,7 @@ namespace Kalba1
                     || tokens[i].type == TokenType.Abs 
                     || tokens[i].type == TokenType.Sqrt)
                 {
-                    FunctionConstructor(i, tokens);
+                    tokens = FunctionConstructor(i, tokens);
                 }
                 if(tokens[i].type == TokenType.Method)
                 {
@@ -270,7 +270,7 @@ namespace Kalba1
         }
         private List<Token> AssignConstructor(List<Token> tokens)
         {
-
+            // output list is not correct
             Token assign;
             List<Token> outputs = new List<Token>();
             List<Token> inputs = new List<Token>();

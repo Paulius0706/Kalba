@@ -7,11 +7,17 @@ namespace Kalba1
     {
         static void Main(string[] args)
         {
-            string[] scriptText = File.ReadAllLines("../../../script.txt");
+            string[] scriptText = File.ReadAllLines("../../../script1.txt");
             List<Token> tokens = Token.TXTtoTokens(scriptText);
             Sintax sintax = new Sintax();
             tokens = sintax.Compress(tokens);
-            //tokens = Token.Compress(tokens);
+            printTokens(tokens);
+            Intepretator intepretator = new Intepretator(tokens, false);
+            Console.WriteLine();
+            intepretator.Run();
+        }
+        public static void printTokens(List<Token> tokens)
+        {
             int i = 0;
             int y = 0;
             while (i < tokens.Count)

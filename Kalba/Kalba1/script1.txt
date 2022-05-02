@@ -1,1 +1,4 @@
-﻿
+﻿PrintLine("Hello world!")
+
+PrintLine((2+2)*2)
+PrintLine(2+2*2)

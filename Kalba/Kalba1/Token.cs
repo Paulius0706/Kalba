@@ -47,7 +47,8 @@ namespace Kalba1
             if(this.type == TokenType.If 
                 || this.type == TokenType.For 
                 || this.type == TokenType.While
-                || this.type == TokenType.Ass)
+                || this.type == TokenType.Ass
+                || this.type == TokenType.Method)
             {
                 output += "\n" + tab + "    input:\n";
                 foreach (Token token in inputConnections) output += token.ToString(pad + 2) + "\n";   
