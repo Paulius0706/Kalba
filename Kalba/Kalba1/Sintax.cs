@@ -321,7 +321,7 @@ namespace Kalba1
              
             }
 
-            if(isMethod)
+            if (inputs[0].type == TokenType.Method)
             {
                 assign.inputConnections = Compress1(inputs);
                 assign.outputConnections = MethodOutputsCompress(outputs);
@@ -331,7 +331,6 @@ namespace Kalba1
                 assign.inputConnections = AritmeticConstructor(inputs);
                 assign.outputConnections = ListCompress(outputs);
             }
-
 
 
 

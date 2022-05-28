@@ -1,6 +1,14 @@
 ﻿double a = 0
 double b = 0
 
+
+int c = 3*3*3
+PrintLine(c)
+c = 3*2*2
+PrintLine(c)
+c = 3+3+3
+
+PrintLine(c)
 method [double d, double s] Circle(double r)
 	double pi = 3.14
 	d = 2*pi*r

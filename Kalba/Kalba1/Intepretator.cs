@@ -107,7 +107,7 @@ namespace Kalba1
             {
                 List<Token> b = executeCommand(token.inputConnections[0]);
                 // pataisyti
-                int c = token.outputConnections.Count > token.inputConnections.Count ? token.inputConnections.Count : token.outputConnections.Count;
+                int c = token.outputConnections.Count > token.inputConnections.Count ? b.Count : token.outputConnections.Count;
                 for (int i = 0; i < c; i++)
                 {
                     string variableName = Convert.ToString(token.outputConnections[i].value);
