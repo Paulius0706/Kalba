@@ -12,7 +12,7 @@ namespace Kalba1
             Sintax sintax = new Sintax();
             tokens = sintax.Compress(tokens);
             printTokens(tokens);
-            Intepretator intepretator = new Intepretator(tokens, false);
+            Intepretator intepretator = new Intepretator(tokens, false,false);
             Console.WriteLine();
             intepretator.Run();
         }

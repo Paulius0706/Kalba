@@ -12,11 +12,13 @@ namespace Kalba1
         public static Dictionary<string, Token> methods = new Dictionary<string, Token>();
         public Dictionary<string, Token> methodValues;
         public bool isMethod { get; set; }
+        public bool isIfForWhile { get; set; }
 
-        public Intepretator(List<Token> tokens, bool isMethod) {
+        public Intepretator(List<Token> tokens, bool isMethod, bool ifForWhile) {
             if (isMethod) methodValues = new Dictionary<string, Token>();
             this.tokens = tokens;
             this.isMethod = isMethod;
+            this.isIfForWhile = ifForWhile;
         }
 
         public void Run() {
@@ -87,6 +89,10 @@ namespace Kalba1
                     else tokenList.Add(new Token(token.row, token.column, TokenType.Double, c));
                     return tokenList;
                 }
+                else
+                {
+                    Console.WriteLine(token);
+                }
             }
             if (token.type == TokenType.Div)
             {
@@ -107,7 +113,7 @@ namespace Kalba1
             {
                 List<Token> b = executeCommand(token.inputConnections[0]);
                 // pataisyti
-                int c = token.outputConnections.Count > token.inputConnections.Count ? b.Count : token.outputConnections.Count;
+                int c = token.outputConnections.Count > b.Count ? b.Count : token.outputConnections.Count;
                 for (int i = 0; i < c; i++)
                 {
                     string variableName = Convert.ToString(token.outputConnections[i].value);
@@ -120,15 +126,15 @@ namespace Kalba1
             {
                 string a1 = Convert.ToString(token.value);
                 if (isMethod) tokenList.Add(new Token(token.row, token.column, methodValues[a1].type, methodValues[a1].value));
-                else tokenList.Add(new Token(token.row, token.column, values[a1].type, values[a1].value));
+                else          tokenList.Add(new Token(token.row, token.column, values[a1].type, values[a1].value));
 
                 return tokenList;
             }
 
-            if(token.type == TokenType.Method)
+            if (token.type == TokenType.Method)
             {
                 string a1 = Convert.ToString(token.value);
-                Intepretator intepretator = new Intepretator(methods[a1].connections, true);
+                Intepretator intepretator = new Intepretator(methods[a1].connections, true, false);
                 intepretator.methodValues = new Dictionary<string, Token>();
                 // input to method input variables
                 for (int i = 0; i < methods[a1].inputConnections.Count; i++)
@@ -152,7 +158,7 @@ namespace Kalba1
                         new Token(
                             methods[a1].row,
                             methods[a1].column,
-                            methods[a1].outputConnections[i].assignType,
+                            methods[a1].outputConnections[i].type,
                             null
                             ));
                 }
@@ -168,8 +174,10 @@ namespace Kalba1
 
             if (token.type == TokenType.If) {
                 if (Convert.ToBoolean(executeCommand(token.inputConnections[0])[0].value)) {
-                    Intepretator intepretator = new Intepretator(token.connections, false);
+                    Intepretator intepretator = new Intepretator(token.connections, isMethod, true);
+                    if (isMethod) intepretator.methodValues = this.methodValues;
                     intepretator.Run();
+                    if (isMethod) this.methodValues = intepretator.methodValues;
                 } 
                 else
                 {
@@ -182,8 +190,10 @@ namespace Kalba1
                             {
                                 if (Convert.ToBoolean(executeCommand(outputToken.inputConnections[0])[0].value))
                                 {
-                                    Intepretator intepretator = new Intepretator(outputToken.connections, false);
+                                    Intepretator intepretator = new Intepretator(outputToken.connections, isMethod, true);
+                                    if (isMethod) intepretator.methodValues = this.methodValues;
                                     intepretator.Run();
+                                    if (isMethod) this.methodValues = intepretator.methodValues;
                                     break;
                                 }
                                 else
@@ -200,8 +210,10 @@ namespace Kalba1
                             }
                             else
                             {
-                                Intepretator intepretator = new Intepretator(outputToken.connections, false);
+                                Intepretator intepretator = new Intepretator(outputToken.connections, isMethod, true);
+                                if (isMethod) intepretator.methodValues = this.methodValues;
                                 intepretator.Run();
+                                if (isMethod) this.methodValues = intepretator.methodValues;
                                 break;
                             }
                         }
@@ -225,29 +237,36 @@ namespace Kalba1
                 List<Token> inputs3 = new List<Token>();
                 while (token.inputConnections.Count > index) inputs3.Add(token.inputConnections[index++]);
 
-                Intepretator intepretator1 = new Intepretator(inputs1, false);
+                Intepretator intepretator1 = new Intepretator(inputs1, isMethod, true);
+                if (isMethod) intepretator1.methodValues = this.methodValues;
                 intepretator1.Run();
-                Intepretator intepretator3 = new Intepretator(inputs3, false);
-                Intepretator intepretator = new Intepretator(conn, false);
+                if (isMethod) this.methodValues = intepretator1.methodValues;
 
-                while (Convert.ToBoolean(executeCommand(inputs2[0])[0].value)){    
-                    intepretator3.Run();
+                Intepretator intepretator3 = new Intepretator(inputs3, isMethod, true);
+                Intepretator intepretator = new Intepretator(conn, isMethod, true);
+
+                while (Convert.ToBoolean(executeCommand(inputs2[0])[0].value)){
+                    if (isMethod) intepretator.methodValues = this.methodValues;
                     intepretator.Run();
+                    if (isMethod) this.methodValues = intepretator.methodValues;
+
+                    if (isMethod) intepretator3.methodValues = this.methodValues;
+                    intepretator3.Run();
+                    if (isMethod) this.methodValues = intepretator3.methodValues;
                 }
             }
             if (token.type == TokenType.While) {
                 List<Token> conn = token.connections;
                 List<Token> inputs1 = token.inputConnections;
-                Intepretator intepretator = new Intepretator(conn, false);
+                Intepretator intepretator = new Intepretator(conn, isMethod, true);
 
                 while (Convert.ToBoolean(executeCommand(inputs1[0])[0].value))
                 {
+                    if (isMethod) intepretator.methodValues = this.methodValues;
                     intepretator.Run();
+                    if (isMethod) this.methodValues = intepretator.methodValues;
                 }
 
-            }
-            if (token.type == TokenType.Else) {
-                //later
             }
             if (token.type == TokenType.Abs) {
                 Token value = executeCommand(token.connections[0])[0];
@@ -375,20 +394,41 @@ namespace Kalba1
             }
             if (token.type == TokenType.BoolDeclare)
             {
-                if (isMethod) methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Bool, false));
-                else values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Bool, false));
+                if (isMethod)
+                {
+                    methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Bool, false));
+                    methodValues[Convert.ToString(token.value)].assignType = TokenType.Bool;
+                }
+                else {
+                    values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Bool, false));
+                    values[Convert.ToString(token.value)].assignType = TokenType.Bool;
+                }
                 return tokenList;
             }
             if (token.type == TokenType.DoubleDeclare)
             {
-                if (isMethod) methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Double, 0));
-                else values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Double, 0));
+                if (isMethod)
+                {
+                    methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Double, 0));
+                    methodValues[Convert.ToString(token.value)].assignType = TokenType.Double;
+                }
+                else {
+                    values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Double, 0));
+                    values[Convert.ToString(token.value)].assignType = TokenType.Double;
+                }
                 return tokenList;
             }
             if (token.type == TokenType.IntDeclare)
             {
-                if (isMethod) methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Int, 0));
-                else values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Int, 0));
+                if (isMethod)
+                {
+                    methodValues.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Int, 0));
+                    methodValues[Convert.ToString(token.value)].assignType = TokenType.Int;
+                }
+                else {
+                    values.Add(Convert.ToString(token.value), new Token(0, 0, TokenType.Int, 0));
+                    values[Convert.ToString(token.value)].assignType = TokenType.Int;
+                }
                 return tokenList;
             }
             if (token.type == TokenType.StringDeclare)

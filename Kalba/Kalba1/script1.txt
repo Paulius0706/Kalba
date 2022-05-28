@@ -15,6 +15,22 @@ method [double d, double s] Circle(double r)
 	s = r*r*pi
 	PrintLine(d)
 	PrintLine(s)
-;(a, b) = Circle(3)method [int z] PrintNTimes(int i, int n)	int k = 0	if(i == n)		PrintLine("end")	;	else		PrintLine(i)		i = i + 1		(k) = PrintNTimes(i, n)	;;
+;
+
+(a, b) = Circle(3)
+
+method [int z] PrintNTimes(int i, int n)
+	int k = 0
+	if(i == n)
+		PrintLine("end")
+	;
+	else
+		PrintLine(i)
+		i = i + 1
+		k = PrintNTimes(i, n)
+	;
+
+;
+
 int z = 0
-(z) = PrintNTimes(0, 10)
+z = PrintNTimes(0, 10)
