@@ -412,53 +412,74 @@ namespace Kalba1
             if (haveLessMoreEqual) return LogicAritmetics(tokens);
 
             // negative number
-            for (int i = 0; i < tokens.Count; i++)
+            bool c = true;
+            while (c)
             {
-                if (tokens.Count > i+1)
+                c = false;
+                for (int i = 0; i < tokens.Count; i++)
                 {
-                    if (tokens[i].type == TokenType.Sub && tokens[i].connections.Count == 0 && i == 0)
+                    if (tokens.Count > i + 1)
                     {
-                        tokens[i].connections.Add(new Token(tokens[i].row, tokens[i].column, TokenType.Int, 0));
-                        tokens[i].connections.Add(tokens[i + 1]);
-                        tokens.RemoveAt(i + 1);
+                        if (tokens[i].type == TokenType.Sub && tokens[i].connections.Count == 0 && i == 0)
+                        {
+                            tokens[i].connections.Add(new Token(tokens[i].row, tokens[i].column, TokenType.Int, 0));
+                            tokens[i].connections.Add(tokens[i + 1]);
+                            tokens.RemoveAt(i + 1);
+                            c = true;
+                        }
                     }
                 }
             }
 
+
             // * / simplification
-            for (int i = 0; i < tokens.Count; i++)
-            {
-                int nextIndex = i + 1;
-                if(tokens.Count > nextIndex+1)
+            c = true;
+            while (c) {
+                c = false;
+                for (int i = 0; i < tokens.Count; i++)
                 {
-                    if ((tokens[nextIndex].type == TokenType.Mul || tokens[nextIndex].type == TokenType.Div) && tokens[nextIndex].connections.Count==0) {
-                        Token temp = tokens[nextIndex];
-                        temp.connections.Add(tokens[i]);
-                        temp.connections.Add(tokens[nextIndex+1]);
-                        tokens.RemoveAt(nextIndex);
-                        tokens.RemoveAt(nextIndex);
-                        tokens[i] = temp;
+                    int nextIndex = i + 1;
+                    if (tokens.Count > nextIndex + 1)
+                    {
+                        if ((tokens[nextIndex].type == TokenType.Mul || tokens[nextIndex].type == TokenType.Div) && tokens[nextIndex].connections.Count == 0)
+                        {
+                            Token temp = tokens[nextIndex];
+                            temp.connections.Add(tokens[i]);
+                            temp.connections.Add(tokens[nextIndex + 1]);
+                            tokens.RemoveAt(nextIndex);
+                            tokens.RemoveAt(nextIndex);
+                            tokens[i] = temp;
+                            c = true;
+                        }
+                    }
+                }
+            }
+
+
+            // + - simplification
+            c = true;
+            while (c)
+            {
+                c = false;
+                for (int i = 0; i < tokens.Count; i++)
+                {
+                    int nextIndex = i + 1;
+                    if (tokens.Count > nextIndex + 1)
+                    {
+                        if ((tokens[nextIndex].type == TokenType.Sub || tokens[nextIndex].type == TokenType.Add) && tokens[nextIndex].connections.Count == 0)
+                        {
+                            Token temp = tokens[nextIndex];
+                            temp.connections.Add(tokens[i]);
+                            temp.connections.Add(tokens[nextIndex + 1]);
+                            tokens.RemoveAt(nextIndex);
+                            tokens.RemoveAt(nextIndex);
+                            tokens[i] = temp;
+                            c = true;
+                        }
                     }
                 }
             }
             
-            // + - simplification
-            for (int i = 0; i < tokens.Count; i++)
-            {
-                int nextIndex = i + 1;
-                if (tokens.Count > nextIndex + 1)
-                {
-                    if ((tokens[nextIndex].type == TokenType.Sub || tokens[nextIndex].type == TokenType.Add) && tokens[nextIndex].connections.Count == 0)
-                    {
-                        Token temp = tokens[nextIndex];
-                        temp.connections.Add(tokens[i]);
-                        temp.connections.Add(tokens[nextIndex + 1]);
-                        tokens.RemoveAt(nextIndex);
-                        tokens.RemoveAt(nextIndex);
-                        tokens[i] = temp;
-                    }
-                }
-            }
 
             return tokens;
         }
