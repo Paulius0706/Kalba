@@ -45,20 +45,24 @@ namespace Kalba1
             for (int i = 0; i < pad; i++) tab += "    ";
             string output = tab + "[" + type + ":" + value + ":";
             if(this.type == TokenType.If 
+                || this.type == TokenType.Elsif
                 || this.type == TokenType.For 
                 || this.type == TokenType.While
                 || this.type == TokenType.Ass
-                || this.type == TokenType.Method)
+                || this.type == TokenType.Method
+                || this.type == TokenType.AddMethod)
             {
                 output += "\n" + tab + "    input:\n";
                 foreach (Token token in inputConnections) output += token.ToString(pad + 2) + "\n";   
             }
-            if (this.type == TokenType.Ass)
+            if (this.type == TokenType.Ass || this.type == TokenType.If || this.type == TokenType.Elsif || this.type == TokenType.AddMethod)
             {
                 output += "\n" + tab + "    output:\n";
                 foreach (Token token in outputConnections) output += token.ToString(pad + 2) + "\n";
             }
-            if (this.type == TokenType.If 
+            if (this.type == TokenType.If
+                || this.type == TokenType.Elsif
+                || this.type == TokenType.Else
                 || this.type == TokenType.For 
                 || this.type == TokenType.While
                 || this.type == TokenType.Abs
@@ -76,7 +80,8 @@ namespace Kalba1
                 || this.type == TokenType.Equal
                 || this.type == TokenType.NotEqual
                 || this.type == TokenType.And
-                || this.type == TokenType.Or)
+                || this.type == TokenType.Or
+                || this.type == TokenType.AddMethod)
             {
                 output += "\n" + tab + "    connections:\n";
                 foreach (Token token in connections) output += token.ToString(pad + 2) + "\n";
@@ -144,6 +149,7 @@ namespace Kalba1
                         else if (newToken == "sqrt") { tokens.Add(new Token(y, ox, TokenType.Sqrt, null)); }
                         else if (newToken == "Print") { tokens.Add(new Token(y, ox, TokenType.Print, null)); }
                         else if (newToken == "PrintLine") { tokens.Add(new Token(y, ox, TokenType.PrintLine, null)); }
+                        else if (newToken == "method") { tokens.Add(new Token(y, ox, TokenType.AddMethod, null));  }
                         else { tokens.Add(new Token(y, ox, TokenType.Unknown, newToken)); }
                     }
                     else if (line[i] == '+') { tokens.Add(new Token(y, i, TokenType.Add, null)); i++; }
@@ -151,7 +157,7 @@ namespace Kalba1
                     else if (line[i] == '*') { tokens.Add(new Token(y, i, TokenType.Mul, null)); i++; }
                     else if (line[i] == '/')
                     {
-                        if (line[i + 1] == '/') { tokens.Add(new Token(y, i, TokenType.Comment, null)); i += 2; }
+                        if (line[i + 1] == '/') { i += 2; }
                         else { tokens.Add(new Token(y, i, TokenType.Div, null)); i++; }
                     }
                     else if (line[i] == '.') { tokens.Add(new Token(y, i, TokenType.Dot, null)); i++; }

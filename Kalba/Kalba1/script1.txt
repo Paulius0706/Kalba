@@ -1,7 +1,12 @@
-﻿PrintLine("Hello world!")
+﻿double a = 0
+double b = 0
 
-PrintLine((2+2)*2)
-PrintLine(2+2*2)
-PrintLine(5<3)
-double a = 2
+method [double d, double s] Circle(double r)
+	double pi = 3.14
+	d = 2*pi*r
+	s = r*r*pi
+	PrintLine(d)
+	PrintLine(s)
+;(a, b) = Circle(3)
 PrintLine(a)
+PrintLine(b)

@@ -29,7 +29,11 @@ namespace Kalba1
             
             for (int i = 0; i < tokens.Count; i++)
             {
-                if (tokens[i].type == TokenType.If || tokens[i].type == TokenType.Elsif || tokens[i].type == TokenType.While)
+                if(tokens[i].type == TokenType.Method)
+                {
+                    tokens = MethodContructor(i, tokens);
+                }
+                if (tokens[i].type == TokenType.If || tokens[i].type == TokenType.While)
                 {
                     tokens = IfWhileElifConstructor(i, tokens);
                 }
@@ -44,9 +48,10 @@ namespace Kalba1
                 {
                     tokens = FunctionConstructor(i, tokens);
                 }
-                if(tokens[i].type == TokenType.Method)
+
+                if(tokens[i].type == TokenType.AddMethod)
                 {
-                    tokens = FunctionConstructor(i, tokens);
+                    tokens = AddMethodConstructor(i, tokens);
                 }
                 if (tokens[i].type == TokenType.Ass)
                 {
@@ -73,11 +78,13 @@ namespace Kalba1
         {
             List<Token> inputConnections = new List<Token>();
             List<Token> connections = new List<Token>();
+            List<Token> outputConnections = new List<Token>();
 
             // (input)
             int lbracketsCount = 0;
             int rbracketsCount = 0;
             int nextindex = i + 1;
+
             if (tokens[nextindex].type == TokenType.BracketL)
             {
                 lbracketsCount++;
@@ -109,11 +116,47 @@ namespace Kalba1
                 tokens.RemoveAt(nextindex);
             }
             tokens[i].connections = Compress1(connections);
+
+            if(nextindex < tokens.Count)
+            {
+                if (tokens[nextindex].type == TokenType.Elsif)
+                { 
+                    IfWhileElifConstructor(nextindex, tokens);
+                    tokens[i].outputConnections.Add(tokens[nextindex]);
+                    tokens.RemoveAt(nextindex);
+                }
+                else if (tokens[nextindex].type == TokenType.Else)
+                {
+                    ElseConstructor(nextindex, tokens);
+                    tokens[i].outputConnections.Add(tokens[nextindex]);
+                    tokens.RemoveAt(nextindex);
+                }
+            }
+     
             return tokens;
         }
+
         private List<Token> ElseConstructor(int i, List<Token> tokens)
         {
-            // do stuff
+            List<Token> connections = new List<Token>();
+            int lbracketsCount = 1;
+            int rbracketsCount = 0;
+            int nextindex = i + 1;
+            while(rbracketsCount != lbracketsCount)
+            {
+                if (tokens[nextindex].type == TokenType.If
+                    || tokens[nextindex].type == TokenType.Elsif
+                    || tokens[nextindex].type == TokenType.While
+                    || tokens[nextindex].type == TokenType.Else)
+                    lbracketsCount++;
+                if (tokens[nextindex].type == TokenType.For) lbracketsCount += 3;
+                if (tokens[nextindex].type == TokenType.SemiComma) rbracketsCount++;
+                if (rbracketsCount != lbracketsCount) connections.Add(tokens[nextindex]);
+                tokens.RemoveAt(nextindex);
+            }
+
+            tokens[i].connections = Compress1(connections);
+
             return tokens;
         }
         private List<Token> ForConstructor(int i, List<Token> tokens) {
@@ -218,6 +261,8 @@ namespace Kalba1
             tokens[i].connections = ListCompress(connections);
             return tokens;
         }
+
+
         private List<Token> ListCompress(List<Token> tokens)
         {
             List<Token> list = new List<Token>();
@@ -236,30 +281,60 @@ namespace Kalba1
         }
         private List<Token> AssignConstructor(int i, List<Token> tokens, int row)
         {
-            
+
             Token assign;
             List<Token> outputs = new List<Token>();
             List<Token> inputs = new List<Token>();
-            if(tokens[i].type != TokenType.BoolDeclare
+            if (tokens[i].type != TokenType.BoolDeclare
                     && tokens[i].type != TokenType.DoubleDeclare
                     && tokens[i].type != TokenType.IntDeclare
                     && tokens[i].type != TokenType.StringDeclare)
                 outputs.Add(tokens[i]);
             int nextindex = i + 1;
-            while (nextindex<tokens.Count && tokens[nextindex].type != TokenType.Ass)
+
+            while (nextindex < tokens.Count && tokens[nextindex].type != TokenType.Ass)
             {
                 outputs.Add(tokens[nextindex]);
                 tokens.RemoveAt(nextindex);
+  
             }
+
             assign = tokens[nextindex];
             tokens.RemoveAt(nextindex);
+
             while (nextindex < tokens.Count && tokens[nextindex].row == row)
             {
                 inputs.Add(tokens[nextindex]);
                 tokens.RemoveAt(nextindex);
+
             }
-            assign.inputConnections = AritmeticConstructor(inputs);
-            assign.outputConnections = ListCompress(outputs);
+
+            bool isMethod = false;
+
+            foreach(Token token in inputs)
+            {
+                if(token.type == TokenType.Method)
+                {
+                    isMethod = true;
+                    break;
+                }
+             
+            }
+
+            if(isMethod)
+            {
+                assign.inputConnections = Compress1(inputs);
+                assign.outputConnections = MethodOutputsCompress(outputs);
+            }
+            else
+            {
+                assign.inputConnections = AritmeticConstructor(inputs);
+                assign.outputConnections = ListCompress(outputs);
+            }
+
+
+
+
             if (tokens[i].type != TokenType.BoolDeclare
                     && tokens[i].type != TokenType.DoubleDeclare
                     && tokens[i].type != TokenType.IntDeclare
@@ -268,30 +343,36 @@ namespace Kalba1
             else tokens.Insert(nextindex, assign);
             return tokens;
         }
-        private List<Token> AssignConstructor(List<Token> tokens)
+
+        private List<Token> MethodOutputsCompress(List<Token> outputs)
         {
-            // output list is not correct
-            Token assign;
-            List<Token> outputs = new List<Token>();
-            List<Token> inputs = new List<Token>();
-            int nextindex = 0;
-            while (nextindex < tokens.Count && tokens[nextindex].type != TokenType.Ass)
+            List<Token> compressedOutputs = new List<Token>();
+            
+            while(outputs.Count > 0)
             {
-                outputs.Add(tokens[nextindex]);
-                tokens.RemoveAt(nextindex);
+                if(outputs[0].type == TokenType.BracketL)
+                {
+                    outputs.RemoveAt(0);
+                }
+
+               if(outputs[0].type == TokenType.BracketR)
+               {
+                    outputs.RemoveAt(0);
+                    break;
+               }
+
+               if(outputs[0].type == TokenType.Comma)
+               {
+                    outputs.RemoveAt(0);
+               }
+
+                compressedOutputs.Add(outputs[0]);
+                outputs.RemoveAt(0);
             }
-            assign = tokens[nextindex];
-            tokens.RemoveAt(nextindex);
-            while (nextindex < tokens.Count)
-            {
-                inputs.Add(tokens[nextindex]);
-                tokens.RemoveAt(nextindex);
-            }
-            assign.inputConnections = AritmeticConstructor(inputs);
-            assign.outputConnections = ListCompress(outputs);
-            tokens.Add(assign);
-            return tokens;
+
+            return compressedOutputs;
         }
+
         private List<Token> AritmeticConstructor(List<Token> tokens)
         {
             
@@ -398,6 +479,42 @@ namespace Kalba1
             tokens[i] = AritmeticConstructor(tokens1)[0];
             return tokens;
         }
+
+        private List<Token> MethodContructor(int i, List<Token> tokens)
+        {
+            List<Token> inputConnections = new List<Token>();
+
+            int lbracketCount = 1;
+            int rBracketCount = 0;
+            if(tokens[i+1].type == TokenType.BracketL)
+            {
+                tokens.RemoveAt(i + 1);
+                while (rBracketCount != lbracketCount && tokens.Count > i + 1)
+                {
+                    if (tokens[i + 1].type == TokenType.BracketL)
+                        lbracketCount++;
+
+                    if (tokens[i + 1].type == TokenType.BracketR)
+                        rBracketCount++;
+
+                    if (lbracketCount != rBracketCount)
+                    {
+                        if (tokens[i+1].type != TokenType.Comma)
+                        {
+                            inputConnections.Add(tokens[i+1]);
+                        }
+                    }
+
+                    tokens.RemoveAt(i + 1);
+
+                }
+            }
+
+                tokens[i].inputConnections = Compress1(inputConnections);
+
+            return tokens;
+        }
+
         private List<Token> LogicAndOrAritmetics (List<Token> tokens)
         {
             List<Token> logic = new List<Token>();
@@ -469,6 +586,7 @@ namespace Kalba1
             tokens[0].connections.Add(left[0]);
             return tokens;
         }
+
         private List<Token> AddMethodConstructor(int i, List<Token> tokens)
         {
             List<Token> inputConnections = new List<Token>();
