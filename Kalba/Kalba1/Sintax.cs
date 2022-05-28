@@ -705,7 +705,8 @@ namespace Kalba1
                     if (tokens[nextIndex].type == TokenType.BracketR)
                         rBoxCount++;
                     if (lBoxCount != rBoxCount)
-                        inputConnections.Add(tokens[nextIndex]);
+                        if(tokens[nextIndex].type != TokenType.Comma)
+                            inputConnections.Add(tokens[nextIndex]);
                     tokens.RemoveAt(nextIndex);
                 }
             }
